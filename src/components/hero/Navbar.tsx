@@ -23,9 +23,9 @@ const sections = ['services', 'works', 'about', 'ask-ai', 'contact'] as const;
 export default function Navbar({ dict }: { dict: NavDict }) {
   const lenis = useLenis();
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const isClickLockedRef = useRef(false);
+  const visibleSectionsRef = useRef(new Set<string>());
+  const clickTargetRef = useRef<string | null>(null);
 
-  // Single IntersectionObserver to track all sections
   useEffect(() => {
     const sectionElements = sections
       .map(id => document.getElementById(id))
@@ -33,72 +33,53 @@ export default function Navbar({ dict }: { dict: NavDict }) {
 
     if (sectionElements.length === 0) return;
 
-    // Track which sections are currently visible
-    const visibleSections = new Set<string>();
-
     const observer = new IntersectionObserver(
       (entries) => {
-        // Don't update if we're in a click-locked state
-        if (isClickLockedRef.current) return;
-
-        // Update the set of visible sections
+        const visible = visibleSectionsRef.current;
         for (const entry of entries) {
           if (entry.isIntersecting) {
-            visibleSections.add(entry.target.id);
+            visible.add(entry.target.id);
           } else {
-            visibleSections.delete(entry.target.id);
+            visible.delete(entry.target.id);
           }
         }
 
-        // If any sections are visible, set the first one (in DOM order) as active
-        if (visibleSections.size > 0) {
-          // Find the first visible section in our defined order
+        if (clickTargetRef.current) {
+          if (visible.has(clickTargetRef.current)) {
+            setActiveSection(clickTargetRef.current);
+            clickTargetRef.current = null;
+          }
+          return;
+        }
+
+        if (visible.size > 0) {
           for (const section of sections) {
-            if (visibleSections.has(section)) {
+            if (visible.has(section)) {
               setActiveSection(section);
               return;
             }
           }
         } else {
-          // No sections visible - we're in the hero area
           setActiveSection(null);
         }
       },
-      {
-        // Trigger when section crosses the middle 50% of the viewport
-        rootMargin: "-40% 0px -40% 0px",
-        threshold: 0
-      }
+      { rootMargin: "-40% 0px -40% 0px", threshold: 0 }
     );
 
     sectionElements.forEach(el => observer.observe(el));
-
     return () => observer.disconnect();
   }, []);
 
   const scrollTo = useCallback((target: string) => {
-    const targetSection = target.replace('#', '');
-
-    // Immediately set active section and lock it
-    setActiveSection(targetSection);
-    isClickLockedRef.current = true;
-
-    // Always set a safety timeout to unlock (in case onComplete doesn't fire)
-    const safetyTimeout = setTimeout(() => {
-      isClickLockedRef.current = false;
-    }, 2000);
-
+    const targetId = target.replace('#', '');
+    if (targetId !== 'top') {
+      clickTargetRef.current = targetId;
+      setActiveSection(targetId);
+    }
     if (lenis) {
       lenis.scrollTo(target, {
         duration: 1.5,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-        onComplete: () => {
-          clearTimeout(safetyTimeout);
-          // Unlock after scroll completes + small buffer for observer to settle
-          setTimeout(() => {
-            isClickLockedRef.current = false;
-          }, 200);
-        }
       });
     }
   }, [lenis]);

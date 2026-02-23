@@ -16,7 +16,7 @@ export default function GetInTouchCTA({
     <motion.button
       className={
         'cursor-pointer px-4 sm:px-6 py-[0.5rem] sm:py-[0.6rem] text-black rounded-full bg-secondary text-base sm:text-lg shadow-md flex items-center space-x-2 transition-colors duration-300 hover:bg-black hover:text-white whitespace-nowrap ' +
-        className
+        (className ?? '')
       }
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
