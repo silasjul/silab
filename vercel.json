@@ -1,0 +1,4 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm ci && npm install --no-save --platform=linuxmusl --arch=x64 lightningcss @tailwindcss/oxide"
+}
