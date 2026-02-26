@@ -10,8 +10,11 @@ const spline = Spline_Sans({
 });
 
 export const metadata: Metadata = {
-    title: "Web Development & AI automation",
-    description: "Silab builds modern web applications and AI-powered solutions. Fullstack development, AI integration, and scalable architecture for startups and businesses.",
+    title: "SiLab — Web Development",
+    description: "SI lab builds modern web applications and AI-powered solutions. Fullstack development, AI integration, and scalable architecture for startups and businesses.",
+    icons: {
+        icon: { url: "/coding.svg", type: "image/svg+xml" },
+    },
     verification: {
         google: "UHg0wtsc2rW9CqzIsVhdiiI-ZsqpDocFtYKRhVMX1xA",
     },

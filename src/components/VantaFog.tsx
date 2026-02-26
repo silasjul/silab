@@ -1,7 +1,8 @@
 'use client';
 
 import Script from 'next/script';
-import { useEffect, useMemo, useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function VantaFog() {
   return useMemo(
@@ -25,6 +26,7 @@ export default function VantaFog() {
       mouseControls: true,
       touchControls: true,
       gyroControls: false,
+      speed: 1.3,
     });`}
         </Script>
       </div>
@@ -33,53 +35,6 @@ export default function VantaFog() {
   );
 }
 
-export function VantaParallaxBackground({ scrollspeed = 0.05 }: { scrollspeed?: number }) {
-  const [hue, setHue] = useState(260);
-  const [scrollY, setScrollY] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Slow hue rotation for color variation
-  useEffect(() => {
-    let direction = -1;
-    const intervalId = setInterval(() => {
-      setHue((prevHue) => {
-        if (prevHue > 260) direction = -1;
-        if (prevHue < 180) direction = 1;
-        return (prevHue + direction) % 360;
-      });
-    }, 200);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // Parallax scroll effect - background moves at 10% of scroll speed
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const parallaxOffset = scrollY * scrollspeed;
-
-  return (
-    <div
-      ref={containerRef}
-      className="fixed top-0 left-[-25vw] md:left-0 w-[500vw] md:w-full h-[300vh] md:h-[140vh] -z-10"
-      style={{
-        filter: `hue-rotate(${hue}deg)`,
-        transform: `translateY(-${parallaxOffset}px)`,
-        willChange: 'transform',
-      }}
-    >
-      <VantaFog />
-    </div>
-  );
-}
-
-// Keep the old export for backwards compatibility if needed
 export function VantaBackground() {
   const [hue, setHue] = useState(260);
 
@@ -97,11 +52,29 @@ export function VantaBackground() {
   }, []);
 
   return (
+    // Outer mask that is always applied
     <div
-      className="absolute top-[0%] inset-0 -z-10"
-      style={{ filter: `hue-rotate(${hue}deg)` }}
+      className="absolute inset-0"
+      style={{ clipPath: 'inset(12px round 20px)' }}
     >
-      <VantaFog />
+      {/* Inner mask that expands to reveal the content */}
+      <motion.div
+        className="absolute inset-0"
+        style={{ filter: `hue-rotate(${hue}deg)` }}
+        initial={{
+          clipPath: 'inset(calc(50% - 0px) calc(50% - 0px) calc(50% - 0px) calc(50% - 0px) round 25px)'
+        }}
+        animate={{
+          clipPath: 'inset(calc(0% + 12px) calc(0% + 12px) calc(0% + 12px) calc(0% + 12px) round 20px)'
+        }}
+        transition={{
+          duration: 1.4,
+          ease: [0.76, 0, 0.24, 1],
+          delay: 0.3,
+        }}
+      >
+        <VantaFog />
+      </motion.div>
     </div>
   );
 }
