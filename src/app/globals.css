@@ -4,12 +4,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-brand: var(--color-brand);
   --breakpoint-nav: 1150px;
   --breakpoint-3xl: 2500px;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-spline);
+  --font-mono: var(--font-roboto-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -61,6 +62,7 @@
 }
 
 :root {
+  --color-brand: #1c2aff;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -101,6 +103,7 @@
 }
 
 .dark {
+  --color-brand: var(--color-brand);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -150,6 +153,11 @@
 
 html {
   overflow-x: hidden;
+}
+
+::selection {
+  background-color: #1c2bffaf;
+  color: #000;
 }
 
 /* Mobile hero fluid typography - scales smoothly from 320px to 768px */
@@ -216,6 +224,6 @@ html {
 }
 
 .main-inner {
-  max-width: 1524px;
+  max-width: 1600px;
   @apply mx-auto;
 }

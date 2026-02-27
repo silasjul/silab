@@ -1,12 +1,18 @@
 import React from "react";
 import { Metadata } from "next";
 import { ReactLenis } from "lenis/react";
-import { Spline_Sans } from "next/font/google";
+import { Spline_Sans, Roboto_Mono } from "next/font/google";
 import "../globals.css";
 import { PostHogProvider } from "../providers";
 
 const spline = Spline_Sans({
     subsets: ["latin"],
+    variable: "--font-spline",
+});
+
+const roboto_mono = Roboto_Mono({
+    subsets: ["latin"],
+    variable: "--font-roboto-mono",
 });
 
 export const metadata: Metadata = {
@@ -35,7 +41,7 @@ export default async function RootLayout({
 
     return (
         <html lang={lang}>
-            <body className={`${spline.className} antialiased`}>
+            <body className={`${spline.variable} ${roboto_mono.variable} font-sans antialiased`}>
                 <ReactLenis root />
                 <PostHogProvider>
                     {children}

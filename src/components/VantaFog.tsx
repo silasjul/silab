@@ -1,8 +1,10 @@
 'use client';
 
 import Script from 'next/script';
-import { motion } from 'framer-motion';
-import { useEffect, useMemo, useState } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+const OVERFLOW = 50;
 
 export default function VantaFog() {
   return useMemo(
@@ -36,28 +38,47 @@ export default function VantaFog() {
 }
 
 export function VantaBackground() {
-  const [hue, setHue] = useState(260);
+  const [hue, setHue] = useState(240);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  const springConfig = { damping: 50, stiffness: 200, mass: 0.5 };
+  const smoothX = useSpring(mouseX, springConfig);
+  const smoothY = useSpring(mouseY, springConfig);
+
+  const translateX = useTransform(smoothX, [0, 1], [OVERFLOW, -OVERFLOW]);
+  const translateY = useTransform(smoothY, [0, 1], [OVERFLOW, -OVERFLOW]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX / window.innerWidth);
+      mouseY.set(e.clientY / window.innerHeight);
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [mouseX, mouseY]);
 
   useEffect(() => {
     let direction = -1;
     const intervalId = setInterval(() => {
       setHue((prevHue) => {
-        if (prevHue > 260) direction = -1;
-        if (prevHue < 180) direction = 1;
-        return (prevHue + direction) % 360;
+        if (prevHue > 240) direction = -1;
+        if (prevHue < 205) direction = 1;
+        return (prevHue + (direction * 1)) % 360;
       });
-    }, 200);
+    }, 150);
 
     return () => clearInterval(intervalId);
   }, []);
 
   return (
-    // Outer mask that is always applied
     <div
-      className="absolute inset-0"
+      ref={containerRef}
+      className="absolute inset-0 overflow-hidden"
       style={{ clipPath: 'inset(12px round 20px)' }}
     >
-      {/* Inner mask that expands to reveal the content */}
       <motion.div
         className="absolute inset-0"
         style={{ filter: `hue-rotate(${hue}deg)` }}
@@ -73,7 +94,16 @@ export function VantaBackground() {
           delay: 0.3,
         }}
       >
-        <VantaFog />
+        <motion.div
+          className="absolute"
+          style={{
+            inset: `-${OVERFLOW}px`,
+            x: translateX,
+            y: translateY,
+          }}
+        >
+          <VantaFog />
+        </motion.div>
       </motion.div>
     </div>
   );

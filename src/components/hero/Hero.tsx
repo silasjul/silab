@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
+import { Button } from "@/components/ui/button";
 
 gsap.registerPlugin(SplitText);
 
@@ -124,7 +125,7 @@ export default function Hero({ dict }: { dict: HeroDict }) {
   }, { scope: container });
 
   return (
-    <div ref={container} className="relative z-10 main-inner px-12 pt-36">
+    <div ref={container} className="relative h-screen z-10 main-inner px-12 pt-36 pb-16 flex flex-col justify-between">
       <h1 className="hero-title-3xl text-8xl xl:text-[8.5rem]">
         <div className="hero-line opacity-0">
           Let&apos;s make the web
@@ -138,6 +139,25 @@ export default function Hero({ dict }: { dict: HeroDict }) {
           {" "}again
         </div>
       </h1>
+      <div className="mt-auto flex justify-between">
+        <div className="text-3xl">
+          <p>
+          Your first impression is your only impression.
+          </p>
+          <p>
+            We bridge the gap between complex ideas and elegant web solutions.
+          </p>
+        </div>
+        <div>
+          <HeroBottomCTA />
+        </div>
+      </div>
     </div>
   );
+}
+
+function HeroBottomCTA() {
+  return (
+    <div></div>
+  )
 }
