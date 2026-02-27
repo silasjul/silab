@@ -26,7 +26,7 @@ export default function VantaFog() {
       mouseControls: true,
       touchControls: true,
       gyroControls: false,
-      speed: 1.3,
+      speed: 1.2,
     });`}
         </Script>
       </div>

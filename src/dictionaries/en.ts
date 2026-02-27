@@ -8,9 +8,8 @@ export const en = {
     getInTouch: "Book a meeting",
   },
   hero: {
-    line1: "Smarter",
-    line2: "Fullstack & AI",
-    line3: "Engineered for growth.",
+    line1: "Make the web great",
+    line2: "again",
   },
   services: {
     label: "What We Do",

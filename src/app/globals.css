@@ -214,3 +214,8 @@ html {
     @apply bg-background text-foreground;
   }
 }
+
+.main-inner {
+  max-width: 1524px;
+  @apply mx-auto;
+}
