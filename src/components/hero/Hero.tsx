@@ -45,11 +45,10 @@ export default function Hero({ dict }: { dict: HeroDict }) {
     const wrapper = wrapperRef.current;
     if (!el || !wrapper) return;
 
-    const ITALIC_PADDING = 12;
-
+    wrapper.style.width = "auto";
     const measureWidth = (word: string) => {
       el.textContent = word;
-      return el.offsetWidth + ITALIC_PADDING;
+      return el.getBoundingClientRect().width + 20;
     };
 
     const widths = rotatingWords.map(measureWidth);
