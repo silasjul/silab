@@ -4,7 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
-import { Button } from "@/components/ui/button";
+import { ArrowDownRight } from "lucide-react";
 
 gsap.registerPlugin(SplitText);
 
@@ -41,6 +41,41 @@ export default function Hero({ dict }: { dict: HeroDict }) {
       stagger: 0.075,
       ease: "power2.out",
     });
+
+    gsap.fromTo(
+      ".hero-tagline",
+      { opacity: 0, y: 30, color: "#1c2aff" },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 1.6,
+        stagger: 0.05,
+        ease: "power4.out",
+      }
+    );
+
+    gsap.to(".hero-tagline", {
+      color: "#000",
+      duration: 1.6,
+      delay: 1.6,
+      stagger: 0.05,
+      ease: "power2.out",
+    });
+
+    gsap.fromTo(
+      ".hero-cta",
+      { opacity: 0, x: 20, y: 10, scale: 0.95 },
+      {
+        opacity: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        duration: 1,
+        delay: 1.6,
+        ease: "power2.out",
+      }
+    );
 
     const el = rotatorRef.current;
     const wrapper = wrapperRef.current;
@@ -139,25 +174,39 @@ export default function Hero({ dict }: { dict: HeroDict }) {
           {" "}again
         </div>
       </h1>
-      <div className="mt-auto flex justify-between">
+      <div className="mt-auto flex justify-between items-end gap-8">
         <div className="text-3xl">
-          <p>
-          Your first impression is your only impression.
+          <p className="hero-tagline opacity-0">
+            Building next-generation brands.
           </p>
-          <p>
-            We bridge the gap between complex ideas and elegant web solutions.
+          <p className="hero-tagline opacity-0">
+            Give your customers a digital experience they won't forget.
           </p>
         </div>
-        <div>
-          <HeroBottomCTA />
-        </div>
+        <ProjectCTA />
       </div>
     </div>
   );
 }
 
-function HeroBottomCTA() {
+function ProjectCTA() {
   return (
-    <div></div>
+    <a
+      href="#contact"
+      className="hero-cta opacity-0 group relative flex items-center gap-4 self-end shrink-0 pl-5 rounded-lg overflow-hidden"
+      style={{
+        background: "rgba(255, 255, 255, 0.21)",
+        backdropFilter: "blur(17px)",
+        WebkitBackdropFilter: "blur(17px)",
+        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)",
+      }}
+    >
+      <span className="relative z-10 font-medium font-mono">
+        START A PROJECT
+      </span>
+      <span className="relative z-10 flex items-center justify-center w-14 h-14 bg-brand text-white">
+        <ArrowDownRight className="w-6 h-6" />
+      </span>
+    </a>
   )
 }
