@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useCallback } from "react";
 import gsap from "gsap";
 import { SplitText } from "gsap/SplitText";
 import { useGSAP } from "@gsap/react";
@@ -161,7 +161,7 @@ export default function Hero({ dict }: { dict: HeroDict }) {
 
   return (
     <div ref={container} className="relative h-screen z-10 main-inner px-12 pt-36 pb-16 flex flex-col justify-between">
-      <h1 className="hero-title-3xl text-8xl xl:text-[8.5rem]">
+      <h1 className="text-8xl xl:text-[8.5rem]">
         <div className="hero-line opacity-0">
           Let&apos;s make the web
         </div>
@@ -177,7 +177,7 @@ export default function Hero({ dict }: { dict: HeroDict }) {
       <div className="mt-auto flex justify-between items-end gap-8">
         <div className="text-3xl">
           <p className="hero-tagline opacity-0">
-            Building next-generation brands.
+            Building next-generation software.
           </p>
           <p className="hero-tagline opacity-0">
             Give your customers a digital experience they won't forget.
@@ -190,23 +190,133 @@ export default function Hero({ dict }: { dict: HeroDict }) {
 }
 
 function ProjectCTA() {
+  const textCubeRef = useRef<HTMLDivElement>(null);
+  const arrowCubeRef = useRef<HTMLDivElement>(null);
+  const hoverTl = useRef<gsap.core.Timeline | null>(null);
+
+  const halfH = 28;
+
+  const handleEnter = useCallback(() => {
+    hoverTl.current?.kill();
+    gsap.killTweensOf([textCubeRef.current, arrowCubeRef.current]);
+
+    const tl = gsap.timeline();
+    hoverTl.current = tl;
+
+    tl.to(textCubeRef.current, {
+      rotateX: -90,
+      z: -halfH,
+      duration: 0.45,
+      ease: "power3.inOut",
+    }, 0);
+
+    tl.to(arrowCubeRef.current, {
+      rotateX: 90,
+      z: -halfH,
+      duration: 0.45,
+      ease: "power3.inOut",
+    }, 0);
+  }, []);
+
+  const handleLeave = useCallback(() => {
+    hoverTl.current?.kill();
+    gsap.killTweensOf([textCubeRef.current, arrowCubeRef.current]);
+
+    const tl = gsap.timeline();
+    hoverTl.current = tl;
+
+    tl.to(textCubeRef.current, {
+      rotateX: 0,
+      z: -halfH,
+      duration: 0.45,
+      ease: "power3.inOut",
+    }, 0);
+
+    tl.to(arrowCubeRef.current, {
+      rotateX: 0,
+      z: -halfH,
+      duration: 0.45,
+      ease: "power3.inOut",
+    }, 0);
+  }, []);
+
+  const faceStyle = (rX: number): React.CSSProperties => ({
+    backfaceVisibility: "hidden",
+    transform: `rotateX(${rX}deg) translateZ(${halfH}px)`,
+  });
+
   return (
     <a
       href="#contact"
-      className="hero-cta opacity-0 group relative flex items-center gap-4 self-end shrink-0 pl-5 rounded-lg overflow-hidden"
+      className="hero-cta opacity-0 group relative flex items-center self-end shrink-0 rounded-lg"
       style={{
-        background: "rgba(255, 255, 255, 0.21)",
-        backdropFilter: "blur(17px)",
-        WebkitBackdropFilter: "blur(17px)",
-        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)",
+        perspective: "800px",
       }}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
     >
-      <span className="relative z-10 font-medium font-mono">
-        START A PROJECT
+      {/* Text cube */}
+      <span className="relative h-14 overflow-hidden rounded-l-lg" style={{ perspective: "800px" }}>
+        <span className="invisible font-medium font-mono px-5 h-14 flex items-center">
+          START A PROJECT
+        </span>
+        <div
+          ref={textCubeRef}
+          className="absolute inset-0"
+          style={{ transformStyle: "preserve-3d", transform: `translateZ(-${halfH}px)` }}
+        >
+          {/* Front */}
+          <span
+            className="absolute inset-0 flex items-center px-5 rounded-l-lg"
+            style={{
+              ...faceStyle(0),
+              background: "rgba(255, 255, 255, 0.21)",
+              backdropFilter: "blur(17px)",
+              WebkitBackdropFilter: "blur(17px)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)",
+            }}
+          >
+            <span className="font-medium font-mono">START A PROJECT</span>
+          </span>
+          {/* Top face (revealed when rotating forward) */}
+          <span
+            className="absolute inset-0 flex items-center px-5 bg-black text-white rounded-l-lg"
+            style={faceStyle(90)}
+          >
+            <span className="font-medium font-mono">START A PROJECT</span>
+          </span>
+        </div>
       </span>
-      <span className="relative z-10 flex items-center justify-center w-14 h-14 bg-brand text-white">
-        <ArrowDownRight className="w-6 h-6" />
+
+      {/* Arrow cube */}
+      <span className="relative w-14 h-14 overflow-hidden rounded-r-lg" style={{ perspective: "800px" }}>
+        <div
+          ref={arrowCubeRef}
+          className="absolute inset-0"
+          style={{ transformStyle: "preserve-3d", transform: `translateZ(-${halfH}px)` }}
+        >
+          {/* Front */}
+          <span
+            className="absolute inset-0 flex items-center justify-center bg-brand text-white rounded-r-lg"
+            style={faceStyle(0)}
+          >
+            <ArrowDownRight className="w-6 h-6" />
+          </span>
+          {/* Bottom face (revealed when rotating backward) */}
+          <span
+            className="absolute inset-0 flex items-center justify-center bg-yellow text-white rounded-r-lg"
+            style={{
+              ...faceStyle(-90),
+              background: "rgba(255, 255, 255, 0.21)",
+              backdropFilter: "blur(80px)",
+              WebkitBackdropFilter: "blur(80px)",
+              boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(255, 255, 255, 0.1), inset 0 0 12px 6px rgba(255, 255, 255, 0.15)",
+            }}
+          >
+            <ArrowDownRight className="w-6 h-6" />
+          </span>
+        </div>
       </span>
     </a>
-  )
+  );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from 'react'
+import React, { useRef, useCallback } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
@@ -28,7 +28,7 @@ export default function Navbar2() {
   });
 
   return (
-    <div  className='fixed top-8 w-full z-50 font-mono invisible'>
+    <div className='fixed top-8 w-full z-50 font-mono invisible'>
       <div className='main-inner px-12'>
         <div ref={navRef} className='flex items-center justify-between rounded-lg backdrop-blur-[80px]'>
           {/* Logo */}
@@ -62,9 +62,64 @@ function NavbarButton({ children, className }: { children: React.ReactNode, clas
 }
 
 function CTAButton({ children, className }: { children: React.ReactNode, className?: string }) {
+  const cubeRef = useRef<HTMLDivElement>(null);
+  const hoverTl = useRef<gsap.core.Tween | null>(null);
+
+  const handleEnter = useCallback(() => {
+    hoverTl.current?.kill();
+    gsap.killTweensOf(cubeRef.current);
+
+    hoverTl.current = gsap.to(cubeRef.current, {
+      rotateX: -90,
+      z: -22,
+      duration: 0.45,
+      ease: "power3.inOut",
+    });
+  }, []);
+
+  const handleLeave = useCallback(() => {
+    hoverTl.current?.kill();
+    gsap.killTweensOf(cubeRef.current);
+
+    hoverTl.current = gsap.to(cubeRef.current, {
+      rotateX: 0,
+      z: -22,
+      duration: 0.45,
+      ease: "power3.inOut",
+    });
+  }, []);
+
+  const halfH = "22px";
+
   return (
-    <button className={cn('w-fit px-4 bg-brand h-11 text-white text-nowrap hover:bg-brand/90 rounded-md text-sm cursor-pointer flex items-center justify-center text-center transition-colors', className)}>
-      {children}
+    <button
+      className={cn('relative w-fit px-4 h-11 text-white text-nowrap rounded-md text-sm cursor-pointer flex items-center justify-center text-center', className)}
+      style={{ perspective: "600px" }}
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      <div
+        ref={cubeRef}
+        className="absolute inset-0 rounded-md"
+        style={{ transformStyle: "preserve-3d", transform: "translateZ(-22px)" }}
+      >
+        {/* Front face */}
+        <span
+          className="absolute inset-0 flex items-center justify-center px-4 bg-brand rounded-md"
+          style={{ backfaceVisibility: "hidden", transform: `translateZ(${halfH})` }}
+        >
+          <span className="flex items-center text-sm">{children}</span>
+        </span>
+        {/* Top face (revealed on hover) */}
+        <span
+          className="absolute inset-0 flex items-center justify-center px-4 bg-black rounded-md"
+          style={{ backfaceVisibility: "hidden", transform: `rotateX(90deg) translateZ(${halfH})` }}
+        >
+          <span className="flex items-center text-sm">{children}</span>
+        </span>
+      </div>
+      {/* Invisible spacer */}
+      <span className="invisible flex items-center">{children}</span>
     </button>
   )
 }
