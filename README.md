@@ -14,6 +14,8 @@ Freelancing website
 
 </div>
 
+Currently redesigning at: https://silab-git-redesign-silasjuls-projects.vercel.app/en
+
 ## Description
 I wanted to start freelancing, so I'm creating a site.
 
